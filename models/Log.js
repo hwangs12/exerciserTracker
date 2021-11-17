@@ -1,10 +1,9 @@
 const mongoose = require("mongoose");
-const Exercise = require("./Exercise");
-const User = require("./User");
 
 const logSchema = new mongoose.Schema({
 	username: {
-		type: User,
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "User",
 	},
 	count: {
 		type: Number,
