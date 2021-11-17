@@ -43,7 +43,7 @@ app.post("/api/users", async (req, res) => {
 		if (err) return console.log(err);
 
 		const log = new Log({
-			username: user._id,
+			userId: user._id,
 			count: 0,
 		});
 
@@ -59,19 +59,34 @@ app.post("/api/users", async (req, res) => {
 
 app.post("/api/users/:_id/exercises", async (req, res) => {
 	const { _id, description, duration, date } = req.body;
-	//i need to find username of this id
-	const log = Log.findOne({ username: ObjectId(_id) })
-		.populate("username")
-		.exec((err, doc) => {
-			if (err) return console.log(err);
-			const username = doc.username.username;
-			res.json({ _id, username, description, duration, date });
+	const id = ObjectId(_id);
+	const user = await User.findOne({ _id: id });
+	if (user) {
+		if (description.length < 1) {
+			res.send("Path `description` is required");
+			return;
+		}
+		if (duration.length < 1) {
+			res.send("Path `duration` is required");
+			return;
+		}
+
+		const exercise = new Exercise({
+			userId: id,
+			description,
+			duration,
+			date,
 		});
 
-	//there are three parts to this post
-	//first, save this in log database
-	//second, append this log to the user
-	//display id description, duration and date on the browser.
+		await Log.updateOne({ userId: id }, { $push: { log: [exercise] } });
+
+		await exercise.save();
+
+		res.json(exercise);
+	} else {
+		res.send("Unknown userId");
+	}
+	//i need to find username of this id
 });
 
 app.get("/api/users/:_id/logs", async (req, res) => {
