@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+
 const userSchema = new mongoose.Schema(
 	{
 		username: {
@@ -11,5 +12,13 @@ const userSchema = new mongoose.Schema(
 	},
 	{ _id: false }
 );
+
+// Specifying a virtual with a `ref` property is how you enable virtual
+// population
+userSchema.virtual('log', {
+	ref: 'Exercise',
+	localField: '_id',
+	foreignField: 'description'
+});
 
 module.exports = User = mongoose.model("User", userSchema);

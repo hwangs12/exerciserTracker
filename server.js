@@ -90,7 +90,21 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
 });
 
 app.get("/api/users/:_id/logs", async (req, res) => {
-	mongoose.find({});
+	try {
+		const userLog = await Log.findOne({ userId: req.params._id }).populate('log', 'description duration date').populate('userId', '_id username')
+		const { userId: { _id, username }, count, log } = userLog
+		const newUserLog = {
+			_id,
+			username,
+			count,
+			log,
+		}
+
+		res.json(newUserLog)
+	}
+	catch (err) {
+		console.log(err)
+	}
 });
 
 const listener = app.listen(process.env.PORT || 4000, () => {
