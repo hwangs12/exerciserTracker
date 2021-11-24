@@ -57,6 +57,11 @@ app.post("/api/users", async (req, res) => {
 	});
 });
 
+app.get("/api/users", async (req, res) => {
+	const users = await User.find({})
+	res.json(users)
+})
+
 app.post("/api/users/:_id/exercises", async (req, res) => {
 	const { _id, description, duration, date } = req.body;
 	const id = ObjectId(_id);
@@ -71,18 +76,32 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
 			return;
 		}
 
+		const d = new Date(date)
+		const day = d.toDateString()
+
+		console.log(day)
+
 		const exercise = new Exercise({
 			userId: id,
 			description,
-			duration,
-			date,
+			duration: parseInt(duration),
+			date: day,
 		});
+
+
 
 		await Log.updateOne({ userId: id }, { $push: { log: [exercise] } });
 
 		await exercise.save();
 
-		res.json(exercise);
+		user.exercise = exercise;
+
+		await user.save();
+
+
+		//create virtual for user where exercise field is added
+
+		res.json(user);
 	} else {
 		res.send("Unknown userId");
 	}
