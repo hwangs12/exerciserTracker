@@ -76,7 +76,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
 			return;
 		}
 
-		const d = new Date(date)
+		const d = date ? new Date(date) : new Date()
 		const day = d.toDateString()
 
 		console.log(day)
@@ -94,14 +94,9 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
 
 		await exercise.save();
 
-		user.exercise = exercise;
-
-		await user.save();
-
-
 		//create virtual for user where exercise field is added
 
-		res.json(user);
+		res.json({ _id: user._id, username: user.username, date: exercise.date, duration: exercise.duration, description: exercise.description });
 	} else {
 		res.send("Unknown userId");
 	}

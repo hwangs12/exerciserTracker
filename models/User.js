@@ -6,15 +6,7 @@ const userSchema = new mongoose.Schema(
 		username: {
 			type: String,
 		},
-		_id: {
-			type: mongoose.Schema.Types.ObjectId,
-		},
-		exercise: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Exercise'
-		}
 	},
-	{ _id: false }
 );
 
 
